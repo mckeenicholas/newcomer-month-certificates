@@ -31,7 +31,7 @@ for font_name, file in fonts:
     font_widths[font_name] = font.face.charWidths
 
 
-def create_certificates(names: list):
+def create_certificates(names: list, comp_name: str):
     output = PdfWriter()
 
     for name in names:
@@ -51,6 +51,7 @@ def create_certificates(names: list):
                 print(
                     f"Error creating certificate for {name} (likely incorrectly"
                     f" formatted profile data)")
+                continue
 
             used_font = ""
             for f_name, width in font_widths.items():
@@ -86,7 +87,7 @@ def create_certificates(names: list):
         page.merge_page(new_pdf.pages[0])
         output.add_page(page)
 
-    output_stream = open("certificates.pdf", "wb")
+    output_stream = open(f"{comp_name}-certificates.pdf", "wb")
     output.write(output_stream)
     output_stream.close()
 
@@ -115,4 +116,4 @@ if __name__ == "__main__":
                 persons.append(person["name"])
 
     persons.sort()
-    create_certificates(persons)
+    create_certificates(persons, args.compID)
