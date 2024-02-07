@@ -1,4 +1,6 @@
 import argparse
+import sys
+
 import reportlab
 import requests
 from PyPDF2 import PdfWriter, PdfReader
@@ -34,7 +36,16 @@ for font_name, file in fonts:
 def create_certificates(names: list, comp_name: str):
     output = PdfWriter()
 
-    for name in names:
+    total = len(names) - 1
+    print("")
+
+    for i, name in enumerate(names):
+        # Create a progress bar:
+        sys.stdout.write('\x1b[1A')
+        sys.stdout.write('\x1b[2K')
+        percent_done = i/total
+        print(f"[{'#' * int(percent_done*30)}{'-' * (30-int(percent_done*30))}] {i}/{total} Certificates Generated")
+
         packet = io.BytesIO()
         template = PdfReader(open(template_path, "rb"))
         page = template.pages[0]
@@ -106,9 +117,18 @@ if __name__ == "__main__":
     persons = []
 
     url = f"https://www.worldcubeassociation.org/api/v0/competitions/{args.compID}/wcif/public"
-    response = requests.get(url).json()
 
-    for person in response["persons"]:
+    try:
+        response = requests.get(url)
+    except requests.exceptions as e:
+        raise SystemExit(e)
+
+    if response.status_code != 200:
+        raise NameError(f"Competition {args.compID} not found.")
+
+    data = response.json()
+
+    for person in data["persons"]:
         if person["registration"] is not None and (person["wcaId"] is None or (person["wcaId"].startswith("2024") and args.all)):
             if args.omit and "(" in person["name"]:
                 persons.append(person["name"][:person["name"].index("(") - 1])
