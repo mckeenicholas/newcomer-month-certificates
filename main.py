@@ -1,5 +1,4 @@
 import argparse
-import sys
 import io
 import os
 import glob
@@ -13,9 +12,9 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 
 TEMPLATE_PATH = "template.pdf"
 FONTS_DIR = "Fonts"
-DEFAULT_FONT_PATH = "Fonts/Inter-Regular.ttf"
+DEFAULT_FONT_PATH = "Fonts/Inter_18pt-Regular.ttf"
 DEFAULT_FONT = DEFAULT_FONT_PATH[:-4]
-Y_COORDINATE = 217
+Y_COORDINATE = 225
 
 
 def load_fonts():
